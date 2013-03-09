@@ -22,6 +22,10 @@ class Randexp
         union(parse($1))                                                #explicit group: /(..)/
       when source =~ /^([^()]*)(\(.*\))$/ && balanced?($1, $2)
         union(parse($1), parse($2))                                     #implied group: /..(..)/
+      when source =~ /^\[(.*)\]$/ && balanced2?($1)
+        random($1.scan(/./))                                           #explicit group: /[..]/
+      when source =~ /^([^()]*)(\[.*\])$/ && balanced?($1, $2)
+        union(parse($1), parse($2))                                     #implied group: /..[..]/
       when source =~ /^(.*)\[\:(.*)\:\]$/
         union(parse($1), random($2))                                    #custom random: /[:word:]/
       when source =~ /^(.*)\\([wsdc])$/
@@ -49,6 +53,10 @@ class Randexp
 
     def self.balanced?(*args)
       args.all? {|s| s.count('(') == s.count(')')}
+    end
+
+    def self.balanced2?(*args)
+      args.all? {|s| s.count('[') == s.count(']')}
     end
 
     def self.quantify_rhs(sexp, multiplicity)
@@ -85,9 +93,9 @@ class Randexp
         [:intersection, lhs, rhs]
       end
     end
-
+    
     def self.random(char)
-      [:random, char.to_sym]
+      [:literal, char.sample(1)]
     end
 
     def self.literal(word)
