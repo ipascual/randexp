@@ -191,12 +191,12 @@ describe "#{'*' * 80}\nRegression Specs:" do
 
   it "/[abc]/                     => ['a', 'b', 'c']" do
     100.times do
-      ['a', 'b', 'c'].should include(/abc/.gen)
+      ['a', 'b', 'c'].should include(/[abc]/.gen)
     end
   end
   it "/[abc]/                     => return 1 character" do
     100.times do
-      /abc/.gen.length.should eq(1)
+      /[abc]/.gen.length.should eql(1)
     end
   end
 
@@ -208,7 +208,7 @@ describe "#{'*' * 80}\nRegression Specs:" do
 
   it "/[a-z]/               => ['a'..'z']" do
     100.times do
-      ['a'..'z'].should include(/[a-z]/.gen)
+      ('a'..'z').should include(/[a-z]/.gen)
       /[a-z]/.gen.length.should == 1
     end
   end
@@ -221,14 +221,14 @@ describe "#{'*' * 80}\nRegression Specs:" do
 
   it '/[0-9]{5}/            => 5 digits' do
     100.times do
-      /[0-9]{5}/.gen.all? do |c|
-        ['0'..'9'].include? c
-      end.should be_true
+      result = /[0-9]{5}/.gen
+      result.length == 5
+      /[0-9]{5}/.match(result)
     end
   end
 
   it '/[0-9]{5}           => shoudl return 5 digits' do
-    /[0-9]{10}/.gen.length == 10
+    /[0-9]{5}/.gen.length == 5
   end
 
   # (([X]|[M])([0-9]{7}))|(([A-Z]{1}[A-Z]{1})([0-9]{6}))|(([P][F]|[C][I]|[M][P]|[A][R])([0-9]{10}))

@@ -23,7 +23,7 @@ class Randexp
       when source =~ /^([^()]*)(\(.*\))$/ && balanced?($1, $2)
         union(parse($1), parse($2))                                     #implied group: /..(..)/
       when source =~ /^\[(.*)\]$/ && balanced2?($1)
-        random($1.scan(/./))                                           #explicit group: /[..]/
+        random(create_array($1))                                    #explicit group: /[..]/
       when source =~ /^([^()]*)(\[.*\])$/ && balanced?($1, $2)
         union(parse($1), parse($2))                                     #implied group: /..[..]/
       when source =~ /^(.*)\[\:(.*)\:\]$/
@@ -96,6 +96,15 @@ class Randexp
     
     def self.random(char)
       [:literal, char.sample(1)]
+    end
+
+    def self.create_array(char)
+      if char.index('-') != nil
+        str = char.split('-')
+        Range.new(str.at(0),str.at(1)).to_a
+      else
+        char.scan(/./)
+      end
     end
 
     def self.literal(word)
